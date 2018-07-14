@@ -30,7 +30,7 @@ export class HomePage {
   login() {
     this.auth.authenticate(this.creds).subscribe(
       res => {
-        console.log(res.headers.get("Authorization"));
+        this.auth.successfulLogin(res.headers.get("Authorization"));
         this.navCtrl.setRoot("CategoriesPage");
       },
       err => {}

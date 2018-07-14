@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { IonicPage, NavController, NavParams } from "ionic-angular";
 import { CategoryService } from "../../services/domain/category.service";
-import { CategoryDTO } from "../../models/Category.dto";
+import { CategoryDTO } from "../../models/category.dto";
 import { API_CONFIG } from "../../config/api.config";
 
 /**
