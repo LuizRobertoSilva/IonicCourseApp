@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Observable } from 'rxjs'; // IMPORTANTE: IMPORT ATUALIZADO
-//import { StorageService } from '../services/storage.service';
+import { StorageService } from '../services/storage.service';
 import { AlertController } from 'ionic-angular/components/alert/alert-controller';
 //import { FieldMessage } from '../models/fieldmessage';
 
@@ -9,7 +9,7 @@ import { AlertController } from 'ionic-angular/components/alert/alert-controller
 export class ErrorInterceptor implements HttpInterceptor {
 
     constructor(
-      //public storage: StorageService,
+      public storage: StorageService,
       public alertCtrl: AlertController) {
     }
 
@@ -50,7 +50,7 @@ export class ErrorInterceptor implements HttpInterceptor {
     }
 
     handle403() {
-       // this.storage.setLocalUser(null);
+        this.storage.setLocalUser(null);
     }
 
     handle401() {
