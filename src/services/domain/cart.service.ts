@@ -32,4 +32,43 @@ export class CartService {
     this.storage.setCart(cart);
     return cart;
   }
+  removeProduct(product: ProductDTO): Cart {
+    let cart = this.getCart();
+    let position = cart.items.findIndex(x => x.product.id == product.id);
+    if (position != -1) {
+      cart.items.splice(position, 1);
+    }
+    this.storage.setCart(cart);
+    return cart;
+  }
+  increaseProduct(product: ProductDTO): Cart {
+    let cart = this.getCart();
+    let position = cart.items.findIndex(x => x.product.id == product.id);
+    if (position != -1) {
+      cart.items[position].quantity++;
+    }
+    this.storage.setCart(cart);
+    return cart;
+  }
+  decreaseProduct(product: ProductDTO): Cart {
+    let cart = this.getCart();
+    let position = cart.items.findIndex(x => x.product.id == product.id);
+    if (position != -1) {
+      cart.items[position].quantity--;
+      if (cart.items[position].quantity < 1) {
+        cart.items.splice(position, 1);
+      }
+    }
+    this.storage.setCart(cart);
+    return cart;
+  }
+  total(): number {
+    let cart = this.getCart();
+    let sum = 0;
+    for (let i = 0; i < cart.items.length; i++) {
+      const element = cart.items[i];
+      sum += element.product.price * element.quantity;
+    }
+    return sum;
+  }
 }
