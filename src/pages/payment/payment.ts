@@ -27,10 +27,8 @@ export class PaymentPage {
     });
   }
 
-  ionViewDidLoad() {}
-
   nextPage() {
     this.order.payment = this.formGroup.value;
-    console.log(this.order);
+    this.navCtrl.push("OrderConfirmationPage", { order: this.order });
   }
 }
