@@ -10,8 +10,12 @@
 
 
 <ion-content padding>
+  <ion-fab bottom right >
+    <button navPush="CartPage" ion-fab mini>
+      <ion-icon name="cart"></ion-icon>
+    </button>
+  </ion-fab>
   <ion-list>
-
     <button ion-item *ngFor="let category of categories" (click)="showProducts(category.id)">
       <ion-thumbnail item-start>
         <img src='{{bucketUrl}}/cat{{category.id}}.jpg'>
