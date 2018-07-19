@@ -4,6 +4,7 @@ import { StorageService } from "../../services/storage.service";
 import { ClientService } from "../../services/domain/client.service";
 import { ClientDTO } from "../../models/client.dto";
 import { API_CONFIG } from "../../config/api.config";
+import { Camera, CameraOptions } from "@ionic-native/camera";
 
 @IonicPage()
 @Component({
@@ -12,14 +13,18 @@ import { API_CONFIG } from "../../config/api.config";
 })
 export class ProfilePage {
   client: ClientDTO;
+
+  picture: string;
+  cameraOn: boolean = false;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public storage: StorageService,
-    public service: ClientService
+    public service: ClientService,
+    private camera: Camera
   ) {}
 
-  ionViewDidLoad() {
+  loadData() {
     let localUser = this.storage.getLocalUser();
     if (localUser && localUser.email) {
       this.service.findByEmail(localUser.email).subscribe(
@@ -37,6 +42,9 @@ export class ProfilePage {
       this.navCtrl.setRoot("HomePage");
     }
   }
+  ionViewDidLoad() {
+    this.loadData();
+  }
 
   getImageIfExists() {
     this.service.getImageFromBucket(this.client.id).subscribe(
@@ -47,5 +55,39 @@ export class ProfilePage {
       },
       err => {}
     );
+  }
+  getCameraPicture() {
+    this.cameraOn = true;
+    const options: CameraOptions = {
+      quality: 100,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      encodingType: this.camera.EncodingType.PNG,
+      mediaType: this.camera.MediaType.PICTURE
+    };
+
+    this.camera.getPicture(options).then(
+      imageData => {
+        // imageData is either a base64 encoded string or a file URI
+        // If it's base64 (DATA_URL):
+        this.picture = "data:image/png;base64," + imageData;
+        this.cameraOn = false;
+      },
+      err => {
+        // Handle error
+      }
+    );
+  }
+
+  sendPicture() {
+    this.service.uploadPicture(this.picture).subscribe(
+      x => {
+        this.picture = null;
+        this.loadData();
+      },
+      err => {}
+    );
+  }
+  cancel() {
+    this.picture = null;
   }
 }
