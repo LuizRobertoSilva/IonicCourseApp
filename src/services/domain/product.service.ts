@@ -8,15 +8,19 @@ import { ProductDTO } from "../../models/product.dto";
 export class ProductService {
   constructor(public http: HttpClient) {}
 
-  findByCategory(categoryId: string) {
+  findByCategory(
+    categoryId: string,
+    page: number = 0,
+    linesPerPage: number = 24
+  ) {
     return this.http.get(
-      `${API_CONFIG.baseUrl}/products/?categories=${categoryId}`
+      `${
+        API_CONFIG.baseUrl
+      }/products/?categories=${categoryId}&page=${page}&linesPerPage=${linesPerPage}`
     );
   }
   findById(id: string): Observable<ProductDTO> {
-    return this.http.get<ProductDTO>(
-      `${API_CONFIG.baseUrl}/products/${id}`
-    );
+    return this.http.get<ProductDTO>(`${API_CONFIG.baseUrl}/products/${id}`);
   }
   getSmallImageFromBucket(id: string): Observable<any> {
     let url = `${API_CONFIG.bucketBaseUrl}/prod${id}-small.jpg`;

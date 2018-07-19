@@ -15,7 +15,11 @@ import { API_CONFIG } from "../../config/api.config";
   templateUrl: "products.html"
 })
 export class ProductsPage {
-  items: ProductDTO[];
+  items: ProductDTO[] = [];
+
+  page: number = 0;
+
+  linesPerPage: number = 10;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -28,14 +32,24 @@ export class ProductsPage {
   }
 
   doRefresh(refresher) {
+    this.items = [];
+    this.page = 0;
     this.loadData();
     setTimeout(() => {
       refresher.complete();
     }, 1000);
   }
 
-  getImageIfExists() {
-    for (var i = 0; i < this.items.length; i++) {
+  doInfinite(infiniteScroll) {
+    this.page++;
+    this.loadData();
+    setTimeout(() => {
+      infiniteScroll.complete();
+    }, 1000);
+  }
+
+  getImageIfExists(start: number, end: number) {
+    for (var i = start; i < end; i++) {
       let item = this.items[i];
       this.productService.getSmallImageFromBucket(item.id).subscribe(
         response => {
@@ -62,15 +76,19 @@ export class ProductsPage {
   loadData() {
     let categoryId = this.navParams.get("categoryId");
     let loader = this.presentLoading();
-    this.productService.findByCategory(categoryId).subscribe(
-      response => {
-        this.items = response["content"];
-        loader.dismiss();
-        this.getImageIfExists();
-      },
-      err => {
-        loader.dismiss();
-      }
-    );
+    this.productService
+      .findByCategory(categoryId, this.page, this.linesPerPage)
+      .subscribe(
+        response => {
+          let start = this.items.length;
+          this.items = this.items.concat(response["content"]);
+          let end = this.items.length - 1;
+          loader.dismiss();
+          this.getImageIfExists(start, end);
+        },
+        err => {
+          loader.dismiss();
+        }
+      );
   }
 }
