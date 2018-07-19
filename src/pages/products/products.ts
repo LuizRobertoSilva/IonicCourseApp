@@ -1,15 +1,13 @@
 import { Component } from "@angular/core";
-import { IonicPage, NavController, NavParams } from "ionic-angular";
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  LoadingController
+} from "ionic-angular";
 import { ProductDTO } from "../../models/product.dto";
 import { ProductService } from "../../services/domain/product.service";
 import { API_CONFIG } from "../../config/api.config";
-
-/**
- * Generated class for the ProductsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -21,17 +19,22 @@ export class ProductsPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public productService: ProductService
+    public productService: ProductService,
+    public loadingController: LoadingController
   ) {}
 
   ionViewDidLoad() {
     let categoryId = this.navParams.get("categoryId");
+    let loader = this.presentLoading();
     this.productService.findByCategory(categoryId).subscribe(
       response => {
         this.items = response["content"];
+        loader.dismiss();
         this.getImageIfExists();
       },
-      err => {}
+      err => {
+        loader.dismiss();
+      }
     );
   }
 
@@ -50,5 +53,13 @@ export class ProductsPage {
   }
   showProductDetail(id: string) {
     this.navCtrl.push("ProductDetailPage", { productId: id });
+  }
+
+  presentLoading() {
+    let loader = this.loadingController.create({
+      content: "Waiting..."
+    });
+    loader.present();
+    return loader;
   }
 }
