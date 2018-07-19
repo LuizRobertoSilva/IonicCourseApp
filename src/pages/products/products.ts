@@ -24,18 +24,14 @@ export class ProductsPage {
   ) {}
 
   ionViewDidLoad() {
-    let categoryId = this.navParams.get("categoryId");
-    let loader = this.presentLoading();
-    this.productService.findByCategory(categoryId).subscribe(
-      response => {
-        this.items = response["content"];
-        loader.dismiss();
-        this.getImageIfExists();
-      },
-      err => {
-        loader.dismiss();
-      }
-    );
+    this.loadData();
+  }
+
+  doRefresh(refresher) {
+    this.loadData();
+    setTimeout(() => {
+      refresher.complete();
+    }, 1000);
   }
 
   getImageIfExists() {
@@ -61,5 +57,20 @@ export class ProductsPage {
     });
     loader.present();
     return loader;
+  }
+
+  loadData() {
+    let categoryId = this.navParams.get("categoryId");
+    let loader = this.presentLoading();
+    this.productService.findByCategory(categoryId).subscribe(
+      response => {
+        this.items = response["content"];
+        loader.dismiss();
+        this.getImageIfExists();
+      },
+      err => {
+        loader.dismiss();
+      }
+    );
   }
 }
